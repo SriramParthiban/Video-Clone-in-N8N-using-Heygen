@@ -1,0 +1,372 @@
+{
+  "name": "AI clone video Gen",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        128
+      ],
+      "id": "060cf1b5-d01f-479d-bbc4-aa4dc8cbf459",
+      "name": "When chat message received",
+      "webhookId": "0e766827-8827-4efb-b641-e42cbc61c3f5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Prompt: {{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=** Purpose **\n\nCreate short, high-impact YouTube Shorts transcripts that grab attention immediately, keep viewers engaged, and clearly deliver a single key message. \nThe transcript should be ready to record as a video (spoken in a natural, energetic tone).\n\n** How It Works **\nWhen you receive a topic or key idea, follow this process:\n\n1. Understand the Core Message\n\n- Treat the input as the main idea to build the short around.\n- Focus on delivering one key point or insight clearly and quickly.\n- Aim to hook, deliver, and end — all within 45–60 seconds of spoken content.\n\n2. Write the Transcript\n\n- Start with a strong hook — a bold statement, surprising fact, or urgent question to grab attention in the first 3 seconds.\n- Keep the tone conversational, energetic, and clear — write how you'd speak on camera.\n- Use simple language, short sentences, and a sense of momentum to keep the viewer watching.\n- Deliver one key idea or insight that adds real value or a wow moment.\n- End with a clear call to action (like, comment, follow, think, or try something).\n- Optionally include one punchy closing line to make it memorable.\n\n** Output Rules **\nOnly output the final transcript.\n\n- Do not explain the transcript or describe your process.\n- Do not use quotation marks unless quoting someone or something specific.\n- Do not include notes, formatting, or line breaks — just plain text that can be spoken naturally.\n- Keep the length under 120 words unless otherwise requested.\n\n** Sample Use Case **\n\nTopic: How AI saves hours of repetitive work\n→ You generate a transcript with a fast hook, a clear example or benefit, and a CTA like “Try it and save 5 hours this week.”"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        608,
+        128
+      ],
+      "id": "ec4703c8-6d0f-4b3e-9d39-a06b8961010e",
+      "name": "Transcript AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        288
+      ],
+      "id": "eb6ba3f5-2184-4302-9f7d-df8d96891dd3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vwOhvTYYiXxP5lkx",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        288
+      ],
+      "id": "07ce0677-9a67-4346-af83-a69df8196414",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "vwOhvTYYiXxP5lkx",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Prompt: {{ $json.output }}",
+        "options": {
+          "systemMessage": "=** Goal **\n\nBased on the transcript create short and catchy title for the content. Use simple language, provide clean, plain title without any other elements"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        928,
+        128
+      ],
+      "id": "54aa2493-f19e-434d-9c93-de4711117061",
+      "name": "Title AI Agent"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "MzUzZTgzYmEzZjE5NDhjZjkzODhiNmI2MjU0ZjJjYjQtMTc1MTEwNTg2NA=="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_inputs\": [\n    {\n      \"character\": {\n        \"type\": \"avatar\",\n        \"avatar_id\": \"8920236bc0154863b29435f6d6b83e02\",\n        \"avatar_style\": \"normal\"\n      },\n      \"voice\": {\n        \"type\": \"text\",\n        \"input_text\": \"{{ $('Transcript AI Agent').item.json.output }}\",\n        \"voice_id\": \"f69f374b3e554b4191becb37e4048784\",\n        \"speed\": 1.1\n      }\n    }\n  ],\n  \"dimension\": {\n    \"width\": 1280,\n    \"height\": 720\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        128
+      ],
+      "id": "f31b2163-d900-4b43-9e79-749fbc8731ae",
+      "name": "Generate Video"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        128
+      ],
+      "id": "6f0be0e7-81f9-4fbb-9e07-87eaa61e12ad",
+      "name": "Wait 1 Minute",
+      "webhookId": "81c39849-4bcb-4cb0-90c7-4b9e75c92aa6"
+    },
+    {
+      "parameters": {
+        "url": "https://api.heygen.com/v1/video_status.get",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $('Generate Video').item.json.data.video_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "MzUzZTgzYmEzZjE5NDhjZjkzODhiNmI2MjU0ZjJjYjQtMTc1MTEwNTg2NA=="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1824,
+        128
+      ],
+      "id": "38bd80a0-ad41-467a-ab28-ee943916e890",
+      "name": "Get Video"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "653ac037-a394-45af-aa02-64952c2f608e",
+              "leftValue": "={{ $json.data.video_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2048,
+        128
+      ],
+      "id": "9e6a1075-ebd0-4d14-9b59-2db180a52e1d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2192,
+        304
+      ],
+      "id": "bc1680ce-4e4d-4464-8299-b104be867fef",
+      "name": "Wait For 10 Seconds",
+      "webhookId": "2ef59b79-d103-486e-82d2-f809109966fb"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.video_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2352,
+        96
+      ],
+      "id": "18d701e4-3797-4a49-9706-3e02c9198075",
+      "name": "Download Video"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Transcript AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Transcript AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Title AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Title AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Title AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Minute",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Minute": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait For 10 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait For 10 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "19f84ab7-dcde-4388-90f1-f80b186dc0c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0bc77d1e83eb271c93d761935713d306621ca9e7f4a7a40c1c9c6764db49cd61"
+  },
+  "id": "EUR4y1JyI0MgdMg4",
+  "tags": []
+}
