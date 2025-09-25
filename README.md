@@ -75,4 +75,3 @@ Perfect for:
 - **Businesses automating explainer content**  
 - **Personal branding & fast content creation**  
 
----
