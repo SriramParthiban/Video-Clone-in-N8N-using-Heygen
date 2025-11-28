@@ -5,7 +5,7 @@
       "parameters": {
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTriggers",
       "typeVersion": 1.1,
       "position": [
         432,
