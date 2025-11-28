@@ -1,7 +1,7 @@
 ## 🎥 AI Clone Video Generator (n8n + OpenAI + HeyGen)
 
 This repository contains an **n8n workflow** that automatically generates **AI avatar videos** from chat inputs.  
-It is designed for **creators, marketers, and businesses** who want to **turn ideas into short-form video content** instantly.
+It is designed for **creators, marketers, and businesses** who want to **turn ideas into short-form video content** instantly
 
 ---
 
